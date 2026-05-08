@@ -11,6 +11,12 @@
             </div>
 
             <div class="flex items-center gap-3 text-sm">
+                <a
+                    href="{{ route('feeds.create') }}"
+                    class="inline-flex items-center gap-1 rounded-md bg-[#1b1b18] dark:bg-[#EDEDEC] px-3 py-1.5 text-sm font-medium text-white dark:text-[#1b1b18] hover:bg-black dark:hover:bg-white transition-colors"
+                >
+                    <span aria-hidden="true">+</span> Add feed
+                </a>
                 <span class="text-[#706f6c] dark:text-[#A1A09A]">Hi, <span class="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{{ auth()->user()->name }}</span></span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -23,6 +29,12 @@
                 </form>
             </div>
         </header>
+
+        @if (session('status'))
+            <div class="mb-6 rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-sm text-emerald-700 dark:text-emerald-300">
+                {{ session('status') }}
+            </div>
+        @endif
 
         @if ($feeds->isEmpty())
             <div class="rounded-lg border border-dashed border-[#19140035] dark:border-[#3E3E3A] p-10 text-center text-[#706f6c] dark:text-[#A1A09A]">
@@ -136,6 +148,16 @@
                                 </div>
                             @endif
                         </dl>
+
+                        <footer class="flex items-center justify-end gap-3 border-t border-[#19140020] dark:border-[#3E3E3A] px-4 py-2 text-xs">
+                            <a href="{{ route('feeds.edit', $feed) }}" class="font-medium text-[#1b1b18] dark:text-[#EDEDEC] hover:underline underline-offset-4">Edit</a>
+                            <span class="text-[#706f6c] dark:text-[#A1A09A]">·</span>
+                            <form method="POST" action="{{ route('feeds.destroy', $feed) }}" onsubmit="return confirm('Delete this feed? This cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="font-medium text-red-600 dark:text-red-400 hover:underline underline-offset-4">Delete</button>
+                            </form>
+                        </footer>
                     </article>
                 @endforeach
             </div>
@@ -157,6 +179,7 @@
                             <th class="px-4 py-3">Sun</th>
                             <th class="px-4 py-3">Other</th>
                             <th class="px-4 py-3">Notes</th>
+                            <th class="px-4 py-3 text-right"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#19140020] dark:divide-[#3E3E3A]">
@@ -234,6 +257,17 @@
                                 </td>
                                 <td class="px-4 py-3 max-w-xs">
                                     <span class="text-[#1b1b18] dark:text-[#EDEDEC]">{{ $feed->notes ?: '—' }}</span>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-right">
+                                    <div class="flex items-center justify-end gap-2 text-xs">
+                                        <a href="{{ route('feeds.edit', $feed) }}" class="font-medium text-[#1b1b18] dark:text-[#EDEDEC] hover:underline underline-offset-4">Edit</a>
+                                        <span class="text-[#706f6c] dark:text-[#A1A09A]">·</span>
+                                        <form method="POST" action="{{ route('feeds.destroy', $feed) }}" onsubmit="return confirm('Delete this feed? This cannot be undone.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="font-medium text-red-600 dark:text-red-400 hover:underline underline-offset-4">Delete</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
