@@ -32,7 +32,7 @@ Route::post('/login', function (Request $request) {
 
 Route::middleware('auth')->group(function () {
     Route::get('/feeds', function () {
-        $feeds = Feed::with(['changedBy', 'fedBy', 'skinToSkinWith', 'timeInSunWith'])
+        $feeds = Feed::with(['changedBy', 'clothesChangedBy', 'fedBy', 'skinToSkinWith', 'timeInSunWith'])
             ->latest()
             ->get();
 

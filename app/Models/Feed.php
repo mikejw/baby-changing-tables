@@ -17,6 +17,7 @@ class Feed extends Model
         'nappy_poo',
         'breast_fed',
         'changed_by',
+        'clothes_changed_by',
         'fed_by',
         'skin_to_skin_with',
         'skin_to_skin_minutes',
@@ -69,8 +70,12 @@ class Feed extends Model
                 $feed->fed_by = null;
             }
 
-            if (! $feed->change_of_clothes) {
+            if (! $feed->nappy_wet && ! $feed->nappy_poo) {
                 $feed->changed_by = null;
+            }
+
+            if (! $feed->change_of_clothes) {
+                $feed->clothes_changed_by = null;
             }
         });
     }
@@ -78,6 +83,11 @@ class Feed extends Model
     public function changedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by');
+    }
+
+    public function clothesChangedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'clothes_changed_by');
     }
 
     public function fedBy(): BelongsTo

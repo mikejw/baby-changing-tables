@@ -29,6 +29,7 @@ class FeedSeeder extends Seeder
             'cry_level' => 2,
             'temperature' => 36.70,
             'change_of_clothes' => true,
+            'clothes_changed_by' => $elainne->id,
             'table_wee' => false,
             'table_poo' => false,
             'time_in_sun' => 10,

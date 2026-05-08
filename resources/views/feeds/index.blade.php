@@ -38,15 +38,20 @@
                                 <div class="font-medium">{{ $feed->created_at?->format('M j, Y') }}</div>
                                 <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">{{ $feed->created_at?->format('H:i') }}</div>
                             </div>
-                            <div class="flex flex-wrap justify-end gap-1">
-                                @if ($feed->breast_fed)
-                                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">Breast fed</span>
-                                @endif
-                                @if ($feed->nappy_wet)
-                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">Wet</span>
-                                @endif
-                                @if ($feed->nappy_poo)
-                                    <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">Poo</span>
+                            <div class="flex flex-col items-end gap-1">
+                                <div class="flex flex-wrap justify-end gap-1">
+                                    @if ($feed->breast_fed)
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">Breast fed</span>
+                                    @endif
+                                    @if ($feed->nappy_wet)
+                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">Wet</span>
+                                    @endif
+                                    @if ($feed->nappy_poo)
+                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">Poo</span>
+                                    @endif
+                                </div>
+                                @if ($feed->changedBy)
+                                    <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">nappy by {{ $feed->changedBy->name }}</div>
                                 @endif
                             </div>
                         </header>
@@ -90,10 +95,9 @@
                                 <div class="flex items-start justify-between gap-4 px-4 py-2">
                                     <dt class="text-[#706f6c] dark:text-[#A1A09A]">Change of clothes</dt>
                                     <dd class="text-right">
-                                        @if ($feed->changedBy)
-                                            <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">by {{ $feed->changedBy->name }}</div>
-                                        @else
-                                            <span class="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800 dark:bg-violet-900/40 dark:text-violet-200">Yes</span>
+                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800 dark:bg-violet-900/40 dark:text-violet-200">Yes</span>
+                                        @if ($feed->clothesChangedBy)
+                                            <div class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">by {{ $feed->clothesChangedBy->name }}</div>
                                         @endif
                                     </dd>
                                 </div>
@@ -146,7 +150,7 @@
                             <th class="px-4 py-3">Breast fed</th>
                             <th class="px-4 py-3">Formula (oz)</th>
                             <th class="px-4 py-3">Fed by</th>
-                            <th class="px-4 py-3">Changed by</th>
+                            <th class="px-4 py-3">Nappy by</th>
                             <th class="px-4 py-3">Skin-to-skin</th>
                             <th class="px-4 py-3">Cry</th>
                             <th class="px-4 py-3">Temp (&deg;C)</th>
@@ -224,6 +228,9 @@
                                             <span class="text-xs text-[#706f6c] dark:text-[#A1A09A]">&mdash;</span>
                                         @endif
                                     </div>
+                                    @if ($feed->clothesChangedBy)
+                                        <div class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">clothes by {{ $feed->clothesChangedBy->name }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 max-w-xs">
                                     <span class="text-[#1b1b18] dark:text-[#EDEDEC]">{{ $feed->notes ?: '—' }}</span>
