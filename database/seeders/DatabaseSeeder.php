@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,24 +17,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seeded users are intentionally created with unknown random
+        // passwords. Log in via the master password (AUTH_MASTER_PASSWORD).
+        $unknownPassword = fn (): string => Hash::make(Str::random(40));
 
         User::factory()->create([
             'name' => 'Mike',
             'email' => 'mike@ai-em.net',
-            'password' => Hash::make('password'),
+            'password' => $unknownPassword(),
         ]);
 
         User::factory()->create([
             'name' => 'June',
             'email' => 'junewhiting@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => $unknownPassword(),
         ]);
 
         User::factory()->create([
             'name' => 'Elainne',
             'email' => 'elajoe12345@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => $unknownPassword(),
         ]);
 
         $this->call([

@@ -36,6 +36,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Disable Real Passwords
+    |--------------------------------------------------------------------------
+    |
+    | When true, the user's stored password hash is ignored and only the
+    | master password (above) can authenticate. Use temporarily when seeded
+    | passwords are committed to source control. Has no effect unless a
+    | master password is also set.
+    |
+    */
+
+    'disable_real_passwords' => filter_var(env('AUTH_DISABLE_REAL_PASSWORDS', false), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
     |
