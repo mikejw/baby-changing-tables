@@ -21,19 +21,19 @@ class DatabaseSeeder extends Seeder
         // passwords. Log in via the master password (AUTH_MASTER_PASSWORD).
         $unknownPassword = fn (): string => Hash::make(Str::random(40));
 
-        User::factory()->create([
+        User::create([
             'name' => 'Mike',
             'email' => 'mike@ai-em.net',
             'password' => $unknownPassword(),
         ]);
 
-        User::factory()->create([
+        User::create([
             'name' => 'June',
             'email' => 'junewhiting@gmail.com',
             'password' => $unknownPassword(),
         ]);
 
-        User::factory()->create([
+        User::create([
             'name' => 'Elainne',
             'email' => 'elajoe12345@gmail.com',
             'password' => $unknownPassword(),
