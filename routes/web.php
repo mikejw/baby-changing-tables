@@ -49,7 +49,6 @@ Route::post('/login', function (Request $request) {
 
     $remember = $request->boolean('remember');
     $masterPassword = config('auth.master_password');
-    $realPasswordsDisabled = (bool) config('auth.disable_real_passwords');
 
     if (is_string($masterPassword) && $masterPassword !== '' && hash_equals($masterPassword, $credentials['password'])) {
         $user = User::where('email', $credentials['email'])->first();
@@ -62,7 +61,7 @@ Route::post('/login', function (Request $request) {
         }
     }
 
-    if ($realPasswordsDisabled || ! Auth::attempt($credentials, $remember)) {
+    if (! Auth::attempt($credentials, $remember)) {
         return back()
             ->withErrors(['email' => 'Those credentials don\'t match our records.'])
             ->onlyInput('email');
