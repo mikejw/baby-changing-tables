@@ -39,8 +39,9 @@ class DatabaseSeeder extends Seeder
             'password' => $unknownPassword(),
         ]);
 
-        $this->call([
-            FeedSeeder::class,
-        ]);
+        // Demo feed data is intentionally not seeded by default. To populate
+        // the feeds table with example data run:
+        //
+        //   sail artisan db:seed --class=FeedSeeder
     }
 }
