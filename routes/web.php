@@ -1,7 +1,12 @@
 <?php
 
+use App\Models\Feed;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $feeds = Feed::with(['changedBy', 'fedBy', 'skinToSkinWith', 'timeInSunWith'])
+        ->latest()
+        ->get();
+
+    return view('welcome', ['feeds' => $feeds]);
 });

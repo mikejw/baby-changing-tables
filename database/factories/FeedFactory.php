@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Feed;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +18,37 @@ class FeedFactory extends Factory
      */
     public function definition(): array
     {
+        $userIds = User::pluck('id');
+
+        $skinToSkinMinutes = fake()->boolean(50) ? fake()->numberBetween(5, 90) : null;
+        $timeInSun = fake()->boolean(60) ? fake()->numberBetween(5, 60) : null;
+        $formulaOunces = fake()->boolean(60) ? fake()->randomFloat(2, 0.5, 5.0) : null;
+        $changeOfClothes = fake()->boolean(20);
+
+        $hasTemperature = fake()->boolean(70);
+        $hasNotes = fake()->boolean(50);
+
+        $createdAt = fake()->dateTimeBetween('-30 days', 'now');
+
         return [
-            //
+            'nappy_wet' => fake()->boolean(60),
+            'nappy_poo' => fake()->boolean(40),
+            'breast_fed' => fake()->boolean(70),
+            'change_of_clothes' => $changeOfClothes,
+            'changed_by' => $changeOfClothes ? $userIds->random() : null,
+            'formula_ounces' => $formulaOunces,
+            'fed_by' => $formulaOunces !== null ? $userIds->random() : null,
+            'skin_to_skin_minutes' => $skinToSkinMinutes,
+            'skin_to_skin_with' => $skinToSkinMinutes !== null ? $userIds->random() : null,
+            'time_in_sun' => $timeInSun,
+            'time_in_sun_with' => $timeInSun !== null ? $userIds->random() : null,
+            'cry_level' => fake()->numberBetween(0, 10),
+            'temperature' => $hasTemperature ? fake()->randomFloat(2, 36.0, 38.0) : null,
+            'table_wee' => fake()->boolean(15),
+            'table_poo' => fake()->boolean(10),
+            'notes' => $hasNotes ? fake()->sentence() : null,
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
         ];
     }
 }
