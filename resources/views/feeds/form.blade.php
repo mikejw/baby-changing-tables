@@ -15,6 +15,24 @@
     </div>
 @endif
 
+{{-- When --}}
+<section class="{{ $sectionClasses }}">
+    <h2 class="{{ $sectionHeadingClasses }}">When</h2>
+    <div>
+        <label for="logged_at" class="{{ $labelClasses }}">Date &amp; time</label>
+        <input
+            id="logged_at"
+            name="logged_at"
+            type="datetime-local"
+            required
+            value="{{ old('logged_at', optional($feed->created_at)->format('Y-m-d\TH:i') ?? now()->format('Y-m-d\TH:i')) }}"
+            class="{{ $inputClasses }} sm:max-w-xs"
+        >
+        <p class="{{ $hintClasses }}">Defaults to now. Set this in the past to back-date a feed from notes.</p>
+        @error('logged_at') <p class="{{ $errorClasses }}">{{ $message }}</p> @enderror
+    </div>
+</section>
+
 {{-- Nappy --}}
 <section class="{{ $sectionClasses }}">
     <h2 class="{{ $sectionHeadingClasses }}">Nappy</h2>

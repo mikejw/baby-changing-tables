@@ -1,8 +1,8 @@
 @extends('layouts.app', ['title' => config('app.name', 'Feeder') . ' — Feeds'])
 
 @section('content')
-    <div class="mx-auto max-w-6xl px-6 py-10 lg:py-16">
-        <header class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div class="mx-auto max-w-6xl px-6 py-10 lg:py-16 md:flex md:h-[100dvh] md:flex-col">
+        <header class="mb-8 flex flex-wrap items-center justify-between gap-4 md:shrink-0">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Feeds</h1>
                 <p class="mt-1 text-sm text-[#706f6c] dark:text-[#A1A09A]">
@@ -31,13 +31,13 @@
         </header>
 
         @if (session('status'))
-            <div class="mb-6 rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-sm text-emerald-700 dark:text-emerald-300">
+            <div class="mb-6 rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-sm text-emerald-700 dark:text-emerald-300 md:shrink-0">
                 {{ session('status') }}
             </div>
         @endif
 
         @if ($feeds->isEmpty())
-            <div class="rounded-lg border border-dashed border-[#19140035] dark:border-[#3E3E3A] p-10 text-center text-[#706f6c] dark:text-[#A1A09A]">
+            <div class="rounded-lg border border-dashed border-[#19140035] dark:border-[#3E3E3A] p-10 text-center text-[#706f6c] dark:text-[#A1A09A] md:shrink-0">
                 No feeds yet. Run <code class="font-mono text-[#1b1b18] dark:text-[#EDEDEC]">php artisan db:seed</code> to add one.
             </div>
         @else
@@ -163,7 +163,7 @@
             </div>
 
             {{-- Tablet & desktop: scrollable table with sticky header --}}
-            <div class="hidden md:block max-h-[calc(100vh-12rem)] overflow-auto rounded-lg border border-[#19140035] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] shadow-sm">
+            <div class="hidden md:block md:flex-1 md:min-h-0 overflow-auto rounded-lg border border-[#19140035] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] shadow-sm">
                 <table class="min-w-full text-left text-sm">
                     <thead class="sticky top-0 z-10 bg-[#FDFDFC] dark:bg-[#1b1b1a] text-xs uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A] shadow-[inset_0_-1px_0_#19140020] dark:shadow-[inset_0_-1px_0_#3E3E3A]">
                         <tr>

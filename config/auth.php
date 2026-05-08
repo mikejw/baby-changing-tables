@@ -22,6 +22,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Master Password
+    |--------------------------------------------------------------------------
+    |
+    | When set to a non-empty value, any login attempt that supplies this
+    | exact password (alongside a valid user email) will be authenticated
+    | as that user. Useful for shared/test environments. Leave empty (or
+    | unset the env var) to disable.
+    |
+    */
+
+    'master_password' => env('AUTH_MASTER_PASSWORD'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
     |
