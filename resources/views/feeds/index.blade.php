@@ -49,6 +49,9 @@
                             <div>
                                 <div class="font-medium">{{ $feed->created_at?->format('M j, Y') }}</div>
                                 <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">{{ $feed->created_at?->format('H:i') }}</div>
+                                @if ($feed->createdBy)
+                                    <div class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">logged by {{ $feed->createdBy->name }}</div>
+                                @endif
                             </div>
                             <div class="flex flex-col items-end gap-1">
                                 <div class="flex flex-wrap justify-end gap-1">
@@ -188,6 +191,9 @@
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="font-medium">{{ $feed->created_at?->format('M j, Y') }}</div>
                                     <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">{{ $feed->created_at?->format('H:i') }}</div>
+                                    @if ($feed->createdBy)
+                                        <div class="text-xs text-[#706f6c] dark:text-[#A1A09A]">by {{ $feed->createdBy->name }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex flex-wrap gap-1">

@@ -74,7 +74,7 @@ Route::post('/login', function (Request $request) {
 
 Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
     Route::get('/feeds', function () {
-        $feeds = Feed::with(['changedBy', 'clothesChangedBy', 'fedBy', 'skinToSkinWith', 'timeInSunWith'])
+        $feeds = Feed::with(['changedBy', 'clothesChangedBy', 'createdBy', 'fedBy', 'skinToSkinWith', 'timeInSunWith'])
             ->latest()
             ->get();
 
@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
 
         $feed = new Feed($attributes);
         $feed->created_at = $loggedAt;
+        $feed->created_by = Auth::id();
         $feed->save();
 
         return redirect()

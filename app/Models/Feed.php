@@ -18,6 +18,7 @@ class Feed extends Model
         'breast_fed',
         'changed_by',
         'clothes_changed_by',
+        'created_by',
         'fed_by',
         'skin_to_skin_with',
         'skin_to_skin_minutes',
@@ -88,6 +89,11 @@ class Feed extends Model
     public function clothesChangedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'clothes_changed_by');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function fedBy(): BelongsTo

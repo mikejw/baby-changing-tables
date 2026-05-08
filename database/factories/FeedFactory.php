@@ -40,6 +40,7 @@ class FeedFactory extends Factory
             'changed_by' => ($nappyWet || $nappyPoo) ? $userIds->random() : null,
             'change_of_clothes' => $changeOfClothes,
             'clothes_changed_by' => $changeOfClothes ? $userIds->random() : null,
+            'created_by' => $userIds->random(),
             'formula_ounces' => $formulaOunces,
             'fed_by' => $formulaOunces !== null ? $userIds->random() : null,
             'skin_to_skin_minutes' => $skinToSkinMinutes,

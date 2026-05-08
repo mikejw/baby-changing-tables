@@ -23,6 +23,7 @@ class FeedSeeder extends Seeder
             'breast_fed' => true,
             'fed_by' => $june->id,
             'changed_by' => $mike->id,
+            'created_by' => $mike->id,
             'skin_to_skin_with' => $elainne->id,
             'skin_to_skin_minutes' => 45,
             'formula_ounces' => 2.50,
