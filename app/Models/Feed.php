@@ -50,33 +50,121 @@ class Feed extends Model
     protected static function booted(): void
     {
         static::saving(function (self $feed): void {
+            $hasNappy = $feed->nappy_wet || $feed->nappy_poo;
+            $hasFormula = $feed->formula_ounces !== null && (float) $feed->formula_ounces > 0;
+            $hasSkinMinutes = $feed->skin_to_skin_minutes !== null && (int) $feed->skin_to_skin_minutes > 0;
+            $hasSunMinutes = $feed->time_in_sun !== null && (int) $feed->time_in_sun > 0;
+
             Validator::make(
-                ['cry_level' => $feed->cry_level],
-                ['cry_level' => ['nullable', 'integer', 'between:0,10']],
-                ['cry_level.between' => 'The cry level must be between 0 (no crying) and 10 (maximum crying).'],
-            )->validate();
+                [
+                    'cry_level' => $feed->cry_level,
+                    'changed_by' => $feed->changed_by,
+                    'clothes_changed_by' => $feed->clothes_changed_by,
+                    'fed_by' => $feed->fed_by,
+                    'skin_to_skin_with' => $feed->skin_to_skin_with,
+                    'time_in_sun_with' => $feed->time_in_sun_with,
+                    'change_of_clothes' => $feed->change_of_clothes,
+                    'skin_to_skin_minutes' => $feed->skin_to_skin_minutes,
+                    'time_in_sun' => $feed->time_in_sun,
+                    'formula_ounces' => $feed->formula_ounces,
+                ],
+                [
+                    'cry_level' => ['required', 'integer', 'between:0,10'],
+                    'changed_by' => ['nullable', 'integer', 'exists:users,id'],
+                    'clothes_changed_by' => ['nullable', 'integer', 'exists:users,id'],
+                    'fed_by' => ['nullable', 'integer', 'exists:users,id'],
+                    'skin_to_skin_with' => ['nullable', 'integer', 'exists:users,id'],
+                    'time_in_sun_with' => ['nullable', 'integer', 'exists:users,id'],
+                    'change_of_clothes' => ['boolean'],
+                    'skin_to_skin_minutes' => ['nullable', 'integer', 'min:0', 'max:600'],
+                    'time_in_sun' => ['nullable', 'integer', 'min:0', 'max:99'],
+                    'formula_ounces' => ['nullable', 'numeric', 'min:0', 'max:99.99'],
+                ],
+                [
+                    'cry_level.between' => 'The cry level must be between 0 (no crying) and 10 (maximum crying).',
+                ],
+            )->after(function (\Illuminate\Validation\Validator $validator) use ($feed, $hasNappy, $hasFormula, $hasSkinMinutes, $hasSunMinutes): void {
+                if ($hasNappy && $feed->changed_by === null) {
+                    $validator->errors()->add(
+                        'changed_by',
+                        'Select who changed the nappy when it was wet or pooey.',
+                    );
+                }
 
-            if ((int) $feed->skin_to_skin_minutes <= 0) {
+                if (! $hasNappy && $feed->changed_by !== null) {
+                    $validator->errors()->add(
+                        'changed_by',
+                        'Remove who changed the nappy unless it was wet or pooey.',
+                    );
+                }
+
+                if ($hasFormula && $feed->fed_by === null) {
+                    $validator->errors()->add(
+                        'fed_by',
+                        'Select who fed when formula amount is recorded.',
+                    );
+                }
+
+                if (! $hasFormula && $feed->fed_by !== null) {
+                    $validator->errors()->add(
+                        'fed_by',
+                        'Remove who fed unless a formula amount is recorded.',
+                    );
+                }
+
+                if ($feed->change_of_clothes && $feed->clothes_changed_by === null) {
+                    $validator->errors()->add(
+                        'clothes_changed_by',
+                        'Select who changed the clothes when there was a change of clothes.',
+                    );
+                }
+
+                if (! $feed->change_of_clothes && $feed->clothes_changed_by !== null) {
+                    $validator->errors()->add(
+                        'clothes_changed_by',
+                        'Remove who changed the clothes unless there was a change of clothes.',
+                    );
+                }
+
+                if ($hasSkinMinutes && $feed->skin_to_skin_with === null) {
+                    $validator->errors()->add(
+                        'skin_to_skin_with',
+                        'Select who held for skin-to-skin when minutes are recorded.',
+                    );
+                }
+
+                if (! $hasSkinMinutes && $feed->skin_to_skin_with !== null) {
+                    $validator->errors()->add(
+                        'skin_to_skin_minutes',
+                        'Enter skin-to-skin minutes when someone is selected, or clear who held.',
+                    );
+                }
+
+                if ($hasSunMinutes && $feed->time_in_sun_with === null) {
+                    $validator->errors()->add(
+                        'time_in_sun_with',
+                        'Select who was present for time in sun when minutes are recorded.',
+                    );
+                }
+
+                if (! $hasSunMinutes && $feed->time_in_sun_with !== null) {
+                    $validator->errors()->add(
+                        'time_in_sun',
+                        'Enter time in sun minutes when someone is selected, or clear who was present.',
+                    );
+                }
+            })->validate();
+
+            if ($feed->skin_to_skin_minutes !== null && (int) $feed->skin_to_skin_minutes <= 0) {
                 $feed->skin_to_skin_minutes = null;
-                $feed->skin_to_skin_with = null;
             }
 
-            if ((int) $feed->time_in_sun <= 0) {
+            if ($feed->time_in_sun !== null && (int) $feed->time_in_sun <= 0) {
                 $feed->time_in_sun = null;
-                $feed->time_in_sun_with = null;
             }
 
-            if ($feed->formula_ounces === null || (float) $feed->formula_ounces <= 0) {
+            if ($feed->formula_ounces !== null && (float) $feed->formula_ounces <= 0) {
                 $feed->formula_ounces = null;
-                $feed->fed_by = null;
-            }
-
-            if (! $feed->nappy_wet && ! $feed->nappy_poo) {
-                $feed->changed_by = null;
-            }
-
-            if (! $feed->change_of_clothes) {
-                $feed->clothes_changed_by = null;
             }
         });
     }
