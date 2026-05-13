@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 $feedAttributesFromRequest = function (Request $request): array {
     $validated = $request->validate([
@@ -35,10 +36,22 @@ $feedAttributesFromRequest = function (Request $request): array {
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('feeds.index');
+        $target = route('feeds.index');
+
+        if (request()->header('X-Inertia')) {
+            return Inertia::location($target);
+        }
+
+        return redirect()->to($target);
     }
 
-    return view('auth.login');
+    // Uncomment to use Blade view
+    // (npm run dev not needed)
+    //return view('auth.login');
+    
+    return Inertia::render('Auth/Login', [
+        'appName' => config('app.name', 'Baby Changing Tables 🎵'),
+    ]);
 })->name('login');
 
 Route::post('/login', function (Request $request) {
@@ -57,7 +70,11 @@ Route::post('/login', function (Request $request) {
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
-            return redirect()->intended(route('feeds.index'));
+            $target = $request->session()->pull('url.intended', route('feeds.index'));
+            if ($request->header('X-Inertia')) {
+                return Inertia::location($target); // full-page redirect to Blade page
+            }
+            return redirect()->to($target);
         }
     }
 
@@ -69,7 +86,11 @@ Route::post('/login', function (Request $request) {
 
     $request->session()->regenerate();
 
-    return redirect()->intended(route('feeds.index'));
+    $target = $request->session()->pull('url.intended', route('feeds.index'));
+    if ($request->header('X-Inertia')) {
+        return Inertia::location($target); // full-page redirect to Blade page
+    }
+    return redirect()->to($target);
 })->name('login.attempt');
 
 Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
