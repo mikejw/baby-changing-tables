@@ -99,7 +99,40 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
             ->latest()
             ->get();
 
-        return view('feeds.index', ['feeds' => $feeds]);
+        $stats = (new \App\Support\FeedWidgetStats($feeds, days: 7))->averages();
+        $latest = $feeds->first();
+
+        return view('feeds.index', [
+            'feeds' => $feeds,
+            'widgetProps' => [
+                'lastFeedSummary' => $latest ? [
+                    'loggedAt' => $latest->created_at?->format('M j, Y H:i'),
+                    'cryLevel' => $latest->cry_level,
+                    'formulaOunces' => $latest->formula_ounces
+                        ? number_format((float) $latest->formula_ounces, 2)
+                        : null,
+                ] : null,
+                'timeSinceLastFeed' => $latest ? [
+                    'loggedAtIso' => $latest->created_at?->toIso8601String(),
+                ] : null,
+                'avgPoos' => [
+                    'value' => $stats['avgPoosPerDay'],
+                    'windowDays' => $stats['windowDays'],
+                    'label' => 'Avg poos per day',
+                ],
+                'avgWeees' => [
+                    'value' => $stats['avgWeeesPerDay'],
+                    'windowDays' => $stats['windowDays'],
+                    'label' => 'Avg wees per day',
+                ],
+                'avgDailyFormula' => [
+                    'value' => $stats['avgDailyFormulaOz'],
+                    'windowDays' => $stats['windowDays'],
+                    'daysWithFormula' => $stats['daysWithFormula'],
+                    'label' => 'Avg daily formula',
+                ]
+            ]
+        ]);
     })->name('feeds.index');
 
     Route::get('/feeds/create', function () {

@@ -41,6 +41,24 @@
                 No feeds yet. Run <code class="font-mono text-[#1b1b18] dark:text-[#EDEDEC]">php artisan db:seed</code> to add one.
             </div>
         @else
+
+        <section class="mb-8 grid gap-4 md:grid-cols-2 md:shrink-0">
+            <div
+                data-widget="last-feed-summary"
+                data-props='@json($widgetProps['lastFeedSummary'])'
+            ></div>
+            <div
+                data-widget="time-since-last-feed"
+                data-props='@json($widgetProps['timeSinceLastFeed'])'
+            ></div>
+        </section>
+
+        <section class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:shrink-0">
+            <div data-widget="avg-poos" data-props='@json($widgetProps['avgPoos'])'></div>
+            <div data-widget="avg-wees" data-props='@json($widgetProps['avgWeees'])'></div>
+            <div data-widget="avg-daily-formula" data-props='@json($widgetProps['avgDailyFormula'])'></div>
+        </section>
+
             {{-- Mobile: card list --}}
             <div class="md:hidden space-y-3">
                 @foreach ($feeds as $feed)
