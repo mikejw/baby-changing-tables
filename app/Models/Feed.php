@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\FeedFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class Feed extends Model
 {
-    /** @use HasFactory<\Database\Factories\FeedFactory> */
+    /** @use HasFactory<FeedFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -166,6 +168,24 @@ class Feed extends Model
             if ($feed->formula_ounces !== null && (float) $feed->formula_ounces <= 0) {
                 $feed->formula_ounces = null;
             }
+        });
+    }
+
+    public function isFeeding(): bool
+    {
+        return $this->breast_fed
+            || ($this->formula_ounces !== null && (float) $this->formula_ounces > 0);
+    }
+
+    /**
+     * @param  Builder<Feed>  $query
+     * @return Builder<Feed>
+     */
+    public function scopeFeedings(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query->where('breast_fed', true)
+                ->orWhere('formula_ounces', '>', 0);
         });
     }
 

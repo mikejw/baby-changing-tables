@@ -52,7 +52,7 @@ export default function TimeSinceLastFeed({ loggedAtIso }) {
         animate={{ opacity: 1 }}
         className="rounded-lg border border-dashed border-[#19140035] dark:border-[#3E3E3A] p-6 text-sm text-[#706f6c] dark:text-[#A1A09A]"
       >
-        No feeds recorded yet.
+        No feeding logged yet.
       </motion.div>
     )
   }

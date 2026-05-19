@@ -2,6 +2,7 @@
 
 use App\Models\Feed;
 use App\Models\User;
+use App\Support\FeedWidgetStats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,8 +48,8 @@ Route::get('/', function () {
 
     // Uncomment to use Blade view
     // (npm run dev not needed)
-    //return view('auth.login');
-    
+    // return view('auth.login');
+
     return Inertia::render('Auth/Login', [
         'appName' => config('app.name', 'Baby Changing Tables 🎵'),
     ]);
@@ -74,6 +75,7 @@ Route::post('/login', function (Request $request) {
             if ($request->header('X-Inertia')) {
                 return Inertia::location($target); // full-page redirect to Blade page
             }
+
             return redirect()->to($target);
         }
     }
@@ -90,6 +92,7 @@ Route::post('/login', function (Request $request) {
     if ($request->header('X-Inertia')) {
         return Inertia::location($target); // full-page redirect to Blade page
     }
+
     return redirect()->to($target);
 })->name('login.attempt');
 
@@ -99,21 +102,22 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
             ->latest()
             ->get();
 
-        $stats = (new \App\Support\FeedWidgetStats($feeds, days: 7))->averages();
-        $latest = $feeds->first();
+        $stats = (new FeedWidgetStats($feeds, days: 7))->averages();
+        $latestFeeding = Feed::query()->feedings()->latest()->first();
 
         return view('feeds.index', [
             'feeds' => $feeds,
             'widgetProps' => [
-                'lastFeedSummary' => $latest ? [
-                    'loggedAt' => $latest->created_at?->format('M j, Y H:i'),
-                    'cryLevel' => $latest->cry_level,
-                    'formulaOunces' => $latest->formula_ounces
-                        ? number_format((float) $latest->formula_ounces, 2)
+                'lastFeedSummary' => $latestFeeding ? [
+                    'loggedAt' => $latestFeeding->created_at?->format('M j, Y H:i'),
+                    'cryLevel' => $latestFeeding->cry_level,
+                    'breastFed' => $latestFeeding->breast_fed,
+                    'formulaOunces' => $latestFeeding->formula_ounces
+                        ? number_format((float) $latestFeeding->formula_ounces, 2)
                         : null,
                 ] : null,
-                'timeSinceLastFeed' => $latest ? [
-                    'loggedAtIso' => $latest->created_at?->toIso8601String(),
+                'timeSinceLastFeed' => $latestFeeding ? [
+                    'loggedAtIso' => $latestFeeding->created_at?->toIso8601String(),
                 ] : null,
                 'avgPoos' => [
                     'value' => $stats['avgPoosPerDay'],
@@ -130,14 +134,14 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
                     'windowDays' => $stats['windowDays'],
                     'daysWithFormula' => $stats['daysWithFormula'],
                     'label' => 'Avg daily formula',
-                ]
-            ]
+                ],
+            ],
         ]);
     })->name('feeds.index');
 
     Route::get('/feeds/create', function () {
         return view('feeds.create', [
-            'feed' => new Feed(),
+            'feed' => new Feed,
             'users' => User::orderBy('name')->get(['id', 'name']),
         ]);
     })->name('feeds.create');
