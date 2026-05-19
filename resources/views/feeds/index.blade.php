@@ -55,7 +55,7 @@
 
         <section class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:shrink-0">
             <div data-widget="avg-poos" data-props='@json($widgetProps['avgPoos'])'></div>
-            <div data-widget="avg-wees" data-props='@json($widgetProps['avgWeees'])'></div>
+            <div data-widget="avg-wees" data-props='@json($widgetProps['avgWees'])'></div>
             <div data-widget="avg-daily-formula" data-props='@json($widgetProps['avgDailyFormula'])'></div>
         </section>
 

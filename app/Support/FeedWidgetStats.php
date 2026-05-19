@@ -26,7 +26,7 @@ class FeedWidgetStats
                 (int) $f->nappy_poo + (int) $f->table_poo
             )
         );
-        $dailyWeees = $period->map(fn (string $date) =>
+        $dailyWees = $period->map(fn (string $date) =>
             ($byDay->get($date) ?? collect())->sum(fn ($f) =>
                 (int) $f->nappy_wet + (int) $f->table_wee
             )
@@ -40,7 +40,7 @@ class FeedWidgetStats
         return [
             'windowDays' => $this->days,
             'avgPoosPerDay' => round($dailyPoos->avg() ?? 0, 1),
-            'avgWeeesPerDay' => round($dailyWeees->avg() ?? 0, 1),
+            'avgWeesPerDay' => round($dailyWees->avg() ?? 0, 1),
             'avgDailyFormulaOz' => $formulaDays->isNotEmpty()
                 ? round($formulaDays->avg(), 1)
                 : null,

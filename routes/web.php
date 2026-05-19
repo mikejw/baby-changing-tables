@@ -120,8 +120,8 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
                     'windowDays' => $stats['windowDays'],
                     'label' => 'Avg poos per day',
                 ],
-                'avgWeees' => [
-                    'value' => $stats['avgWeeesPerDay'],
+                'avgWees' => [
+                    'value' => $stats['avgWeesPerDay'],
                     'windowDays' => $stats['windowDays'],
                     'label' => 'Avg wees per day',
                 ],
