@@ -2,9 +2,11 @@
 
 use App\Models\Feed;
 use App\Models\User;
+use App\Support\FeedWidgetStats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 $feedAttributesFromRequest = function (Request $request): array {
     $validated = $request->validate([
@@ -35,10 +37,22 @@ $feedAttributesFromRequest = function (Request $request): array {
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('feeds.index');
+        $target = route('feeds.index');
+
+        if (request()->header('X-Inertia')) {
+            return Inertia::location($target);
+        }
+
+        return redirect()->to($target);
     }
 
-    return view('auth.login');
+    // Uncomment to use Blade view
+    // (npm run dev not needed)
+    // return view('auth.login');
+
+    return Inertia::render('Auth/Login', [
+        'appName' => config('app.name', 'Baby Changing Tables 🎵'),
+    ]);
 })->name('login');
 
 Route::post('/login', function (Request $request) {
@@ -57,7 +71,12 @@ Route::post('/login', function (Request $request) {
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
-            return redirect()->intended(route('feeds.index'));
+            $target = $request->session()->pull('url.intended', route('feeds.index'));
+            if ($request->header('X-Inertia')) {
+                return Inertia::location($target); // full-page redirect to Blade page
+            }
+
+            return redirect()->to($target);
         }
     }
 
@@ -69,7 +88,12 @@ Route::post('/login', function (Request $request) {
 
     $request->session()->regenerate();
 
-    return redirect()->intended(route('feeds.index'));
+    $target = $request->session()->pull('url.intended', route('feeds.index'));
+    if ($request->header('X-Inertia')) {
+        return Inertia::location($target); // full-page redirect to Blade page
+    }
+
+    return redirect()->to($target);
 })->name('login.attempt');
 
 Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
@@ -78,12 +102,46 @@ Route::middleware('auth')->group(function () use ($feedAttributesFromRequest) {
             ->latest()
             ->get();
 
-        return view('feeds.index', ['feeds' => $feeds]);
+        $stats = (new FeedWidgetStats($feeds, days: 7))->averages();
+        $latestFeeding = Feed::query()->feedings()->latest()->first();
+
+        return view('feeds.index', [
+            'feeds' => $feeds,
+            'widgetProps' => [
+                'lastFeedSummary' => $latestFeeding ? [
+                    'loggedAt' => $latestFeeding->created_at?->format('M j, Y H:i'),
+                    'cryLevel' => $latestFeeding->cry_level,
+                    'breastFed' => $latestFeeding->breast_fed,
+                    'formulaOunces' => $latestFeeding->formula_ounces
+                        ? number_format((float) $latestFeeding->formula_ounces, 2)
+                        : null,
+                ] : null,
+                'timeSinceLastFeed' => $latestFeeding ? [
+                    'loggedAtIso' => $latestFeeding->created_at?->toIso8601String(),
+                ] : null,
+                'avgPoos' => [
+                    'value' => $stats['avgPoosPerDay'],
+                    'windowDays' => $stats['windowDays'],
+                    'label' => 'Avg poos per day',
+                ],
+                'avgWees' => [
+                    'value' => $stats['avgWeesPerDay'],
+                    'windowDays' => $stats['windowDays'],
+                    'label' => 'Avg wees per day',
+                ],
+                'avgDailyFormula' => [
+                    'value' => $stats['avgDailyFormulaOz'],
+                    'windowDays' => $stats['windowDays'],
+                    'daysWithFormula' => $stats['daysWithFormula'],
+                    'label' => 'Avg daily formula',
+                ],
+            ],
+        ]);
     })->name('feeds.index');
 
     Route::get('/feeds/create', function () {
         return view('feeds.create', [
-            'feed' => new Feed(),
+            'feed' => new Feed,
             'users' => User::orderBy('name')->get(['id', 'name']),
         ]);
     })->name('feeds.create');

@@ -10,6 +10,8 @@
         @fonts
 
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+            {{-- Required for React Fast Refresh when loading JSX via Vite (e.g. widget islands in app.js). --}}
+            @viteReactRefresh
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
             <script src="https://cdn.tailwindcss.com"></script>
